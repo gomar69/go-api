@@ -10,6 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// test CI/CD workflow
 // Struct untuk user
 type User struct {
 	ID        int    `json:"id"`
