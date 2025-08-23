@@ -1,13 +1,11 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-
-	_ "github.com/lib/pq"
+	"time"
 )
 
 // test CI/CD workflow 2
@@ -21,51 +19,20 @@ type User struct {
 }
 
 func main() {
-	// Koneksi ke PostgreSQL lokal
-	connStr := "postgres://postgres:postgres@host.docker.internal:5432/cicd?sslmode=disable"
-
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	// Tes koneksi
-	if err := db.Ping(); err != nil {
-		log.Fatal("Tidak bisa konek ke DB:", err)
+	// Data dummy manual (nggak pake DB)
+	users := []User{
+		{ID: 2, Name: "Amar", Email: "amar@example.com", CreatedAt: time.Now().Format(time.RFC3339)},
+		{ID: 3, Name: "Maulana", Email: "maulana@example.com", CreatedAt: time.Now().Format(time.RFC3339)},
 	}
 
 	// Route root
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		var now string
-		err := db.QueryRow("SELECT NOW()").Scan(&now)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		now := time.Now().Format(time.RFC3339)
 		fmt.Fprintf(w, "cangcut amar.maulana@domain.com - Time: %s", now)
 	})
 
-	// Route GET /users → ambil semua user
+	// Route GET /users → ambil data manual
 	http.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
-		rows, err := db.Query("SELECT id, name, email, created_at FROM users ORDER BY id ASC")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
-
-		var users []User
-		for rows.Next() {
-			var u User
-			if err := rows.Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			users = append(users, u)
-		}
-
-		// Output JSON
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	})
