@@ -41,7 +41,7 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Fprintf(w, "Hello from Go + PostgreSQL! Time: %s", now)
+		fmt.Fprintf(w, "amar.maulana@domain.com - Time: %s", now)
 	})
 
 	// Route GET /users → ambil semua user
