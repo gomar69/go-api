@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// test CI/CD workflow 2
+// test CI/CD workflow 2 --
 // test CI/CD workflow 3
 // Struct untuk user
 type User struct {
